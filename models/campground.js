@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Schemac = new mongoose.Schema;
+const Schema = new mongoose.Schema;
 
 const CampgroundSchema = new mongoose.Schema({
     title: String,
