@@ -6,15 +6,12 @@ const { title } = require('process');
 const { MongoClient } = require('mongodb');
 const methodOverried = require('method-override');
 const mongo = require('./models/dbconnection');
-//require('dontenv').config();
-
-
-//app.use(express.static(path.join(__dirname, 'models')))
+const ejsMate = require('ejs-mate');
 
 
 const app = express();
 
-
+app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('/views', path.join(__dirname), 'views');
 
@@ -62,6 +59,10 @@ app.delete('/campgrounds/:id', async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds');
+})
+
+app.use((req, res) => {
+    res.status(404).send('NOT FOUND')
 })
 
 app.listen(3000, async () => {
