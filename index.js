@@ -5,22 +5,18 @@ const mongo = require('./models/dbconnection');
 const ejsMate = require('ejs-mate');
 const catchAsync = require('./utils/catchAsync');
 const ExpressError = require('./utils/ExpressError');
-const campgrounds = require('./routes/campgrounds');
-const reviews = require('./routes/reviews')
+const campgroundsRoute = require('./routes/campgrounds');
+const reviewsRoute = require('./routes/reviews')
 const session = require('express-session');
 const flash = require('connect-flash');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user');
+const usersRoute = require('./routes/users');
 
 const app = express();
 
-const validateReview = (req, res, next) => {
-    const { error } = reviewSchema.validate(req.body);
-    if(error) {
-        const msg = error.details.map(el => el.message).join(',');
-        throw new ExpressError(msg, 400)
-    } else {
-        next();
-    }
-}
+
 
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
@@ -45,15 +41,26 @@ const sessionConfig = {
 app.use(session(sessionConfig));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+
+// In order to support persistent login sessions, passport needs to know how to serialize and deserialize a user.
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req, res, next) => {
+    res.locals.loggedUser = req.User;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
 })
 
 
-app.use('/campgrounds', campgrounds)
-app.use('/campgrounds/:id/reviews', reviews)
+app.use('/campgrounds', campgroundsRoute)
+app.use('/campgrounds/:id/reviews', reviewsRoute)
+app.use('/', usersRoute)
 
 app.get('/', (req, res) => {
     res.render('home');
