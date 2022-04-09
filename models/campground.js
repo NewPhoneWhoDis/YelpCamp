@@ -11,6 +11,8 @@ ImageSchema.virtual('thumbnail').get(function () {
     return this.url.replace('/upload', '/upload/w_200');
 });
 
+const opts = { toJSON: { virtuals: true} };
+
 const CampgroundSchema = new mongoose.Schema({
     title: String,
     price: Number,
@@ -38,7 +40,15 @@ const CampgroundSchema = new mongoose.Schema({
             ref: 'Review'
         }
     ]
-});
+}, opts);
+
+// !!! By default Mongoose does not incluide virtuals when a doc is converted to JSON. In order to include virtuals in res.json() 
+// !!!! toJSON schema needs to be set to { virtuals: true }
+// adding properties.popUpMarkup in order to access it in clusterMap.js as a pop up
+CampgroundSchema.virtual('properties.popUpMarkup').get(function () {
+    return `<strong><a href="/campgrounds/${this._id}">${this.title}</a><strong>
+    <p>${this.description.substring(0, 20)}...</p>`;
+})
 
 CampgroundSchema.post('findOneAndDelete', async function (doc) {
     if (doc) {
