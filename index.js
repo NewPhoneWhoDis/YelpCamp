@@ -31,7 +31,7 @@ app.use(express.urlencoded({ extended: true}));
 app.use(methodOverried('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Prevents simple Mongo Injection
+// Prevents simple Mongo Injection 
 app.use(mongoSanitize({
     replaceWith: '_'
 }));
