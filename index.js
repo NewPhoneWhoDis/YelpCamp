@@ -16,6 +16,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const usersRoute = require('./routes/users');
+const mongoSanitize = require('express-mongo-sanitize');
 
 const app = express();
 
@@ -30,13 +31,21 @@ app.use(express.urlencoded({ extended: true}));
 app.use(methodOverried('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Prevents simple Mongo Injection
+app.use(mongoSanitize({
+    replaceWith: '_'
+}));
+
+
 const sessionConfig = {
+    name: 'session',
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        // setting to cookie to expire after a week, 1000 mil sec in a second then 60 sec in a min. 60 min in a hour
+        // secure: true,
+        // setting the cookie to expire after a week, 1000 mil sec in a second then 60 sec in a min. 60 min in a hour
         // 24 hours in a day and 7 days in a week
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7
