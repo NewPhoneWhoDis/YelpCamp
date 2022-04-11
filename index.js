@@ -17,6 +17,8 @@ const LocalStrategy = require('passport-local');
 const User = require('./models/user');
 const usersRoute = require('./routes/users');
 const mongoSanitize = require('express-mongo-sanitize');
+const MongoStore = require("connect-mongo")(session);
+const mongoose = require('mongoose');
 
 const app = express();
 
@@ -36,8 +38,17 @@ app.use(mongoSanitize({
     replaceWith: '_'
 }));
 
+//const connectionString = 'mongodb+srv://Admin:'+process.env.DATABASE_PASSWORD+'@cluster0.vogks.mongodb.net/Cluster0?retryWrites=true&w=majority';
+
+const store = new MongoStore({
+    url: process.env.DATABASE_CONNECTION_STRING,
+    secret: process.env.SESSION_SECRET,
+    touchAfter: 24 * 60 * 60,
+    //mongooseConnection: mongoose.connection
+});
 
 const sessionConfig = {
+    store: store,
     name: 'session',
     secret: process.env.SESSION_SECRET,
     resave: false,
