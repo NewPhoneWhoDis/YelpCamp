@@ -1,6 +1,6 @@
 # YelpCamp
 
-![YelpCamp](images\YelpCamp.png)
+![YelpCamp](https://res.cloudinary.com/dlpcdltht/image/upload/v1649772798/YelpCamp_qdgthc.png)
 
 YelpCamp is a web application that allows users to see and rate campgrounds around the world. You can also create an account and create your own campsite.
 
